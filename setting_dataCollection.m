@@ -109,8 +109,8 @@ function config_joint_list = setting_dataCollection(config,...
     % User Setting
     Theta_Joint_No = 1;
     theta_angle_list = deg2rad(config.data_collection.joint2.init_joint_range(1));
-    train_angle_upper_limit = min([config.data_collection.joint2.train_angle_max, config.data_collection.joint3.couple_upper_limit - theta_angle_list]);
-    train_angle_lower_limit = max([config.data_collection.joint2.train_angle_min, config.data_collection.joint3.couple_lower_limit - theta_angle_list]);
+    train_angle_upper_limit = min([config.data_collection.joint2.train_angle_max, 41 - config.data_collection.joint2.init_joint_range(3)]);
+    train_angle_lower_limit = max([config.data_collection.joint2.train_angle_min, -11 - config.data_collection.joint2.init_joint_range(3)]);
     train_angle_list = deg2rad(train_angle_lower_limit:config.data_collection.joint2.train_angle_delta:train_angle_upper_limit);
     init_joint_range=deg2rad(config.data_collection.joint2.init_joint_range);
     Train_Joint_No = config.data_collection.joint2.Train_Joint_No;

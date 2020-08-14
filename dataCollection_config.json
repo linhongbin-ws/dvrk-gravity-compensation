@@ -12,8 +12,8 @@
       "train_angle_min": -40,
       "train_angle_delta": 2,
       "Theta_Joint_No": 5,
-      "theta_angle_max": 90,
-      "theta_angle_min": -90,
+      "theta_angle_max": 120,
+      "theta_angle_min": -80,
       "theta_angle_delta": 30
     },
     "joint5": {

@@ -23,12 +23,12 @@
       "train_angle_min": -85,
       "train_angle_delta": 6,
       "Theta_Joint_No": 3,
-      "theta_angle_max": 20,
-      "theta_angle_min": -10,
+      "theta_angle_max": -15,
+      "theta_angle_min": -32,
       "theta_angle_delta": 5
     },
     "joint4": {
-      "init_joint_range": [15,25,-15,-110,0,0,0],
+      "init_joint_range": [15,25,-15,-110,90,0,0],
       "Train_Joint_No": 4,
       "train_angle_max": {
         "MTML": 80,
@@ -40,8 +40,8 @@
       },
       "train_angle_delta": 6,
       "Theta_Joint_No": 3,
-      "theta_angle_max": 20,
-      "theta_angle_min": -10,
+      "theta_angle_max": -15,
+      "theta_angle_min": -33,
       "theta_angle_delta": 5
     },
     "joint3": {
@@ -71,8 +71,8 @@
     "joint2": {
       "init_joint_range": [15,25,-15,-110,0,0,0],
       "Train_Joint_No": 2,
-      "train_angle_max": 23,
-      "train_angle_min": -14,
+      "train_angle_max": 35,
+      "train_angle_min": 6,
       "train_angle_delta": 1,
       "repeat_times": 10
     },

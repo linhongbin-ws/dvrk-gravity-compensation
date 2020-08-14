@@ -5,12 +5,14 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     %  Copyright (c)  2018, The Chinese University of Hong Kong
     %  This software is provided "as is" under BSD License, with
     %  no warranty. The complete license can be found in LICENSE
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Initialization%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
     % checking if arguments correct
     argument_checking(ARM_NAME,...
         SN);
 
-    % Read 'dataCollection_config.json' file
+    % Read 'dataCollection_configz.json' file
     fid = fopen('dataCollection_config.json');
     if fid<3
         error('cannot open file dataCollection_config.json, please check the path')
@@ -27,6 +29,7 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     joint_pose_1 = [0,0,0,0,167,0,0];
 
     % Create a parent data folder for each MTM to store data
+
     if strcmp(ARM_NAME,'MTML')
         output_data_path_mtm = [config.data_collection.output_data_root_path,'/MTML_',SN];
     else
@@ -42,30 +45,51 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     mtm_arm = mtm(ARM_NAME);
     mtm_arm.move_joint(deg2rad(joint_origin_pose));
 
-    % Identify the hard limit, [config.data_collection.joint5.theta_angle_max],
-    % to prevent hitting upper panel of cartesian space
-    Joint_No = 3;
-    joint_init_pos = joint_pose_1;
+    %%%%%%%%%%%%%%%%%%%%%%figure out suitable joint position params for specific system%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % figure out the upper limit in workspace, when collecting joint #5
+    fprintf('setting Joint #5 params\n')
+    Moving_Joint_No = 3;
+    joint_init_pos = config.data_collection.joint5.init_joint_range;
+    joint_init_pos(5) = 167 % a joint position that is most likely to hit upper workspace limit
     param_name = 'theta_angle_max';
     default_value = config.data_collection.joint5.theta_angle_max;
-    joint_init_pos(3) = default_value-7; %10 degree smaller for saftey reason
+    joint_init_pos(3) = default_value-7; 
     goal_msg = 'Moving MTM upward by increasing Joint#3, finish when distal links of MTM 10cm away from top panel of environment';
     config.data_collection.joint5.theta_angle_max = wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
-        Joint_No,...
+        Moving_Joint_No,...
+        param_name,...
+        ARM_NAME,...
+        default_value,...
+        goal_msg);
+    
+    
+    % figure out the upper limit in workspace, when collecting joint #4
+    fprintf('setting Joint #4 params\n')
+    Moving_Joint_No = 3; %
+    joint_init_pos = config.data_collection.joint4.init_joint_range;
+    joint_init_pos(4) = 90 % a joint position that is most likely to hit upper workspace limit for train joint
+    param_name = 'theta_angle_max';
+    default_value = config.data_collection.joint4.theta_angle_max;
+    joint_init_pos(3) = default_value-7; %10 degree smaller for saftey reason
+    goal_msg = 'Moving MTM upward by increasing Joint#3, finish when distal links of MTM 10cm away from top panel of environment';
+    config.data_collection.joint4.theta_angle_max = wizard_move_one_joint(mtm_arm,...
+        joint_init_pos,...
+        Moving_Joint_No,...
         param_name,...
         ARM_NAME,...
         default_value,...
         goal_msg);
 
-    % Identify the hard limit, [config.data_collection.joint3.theta_angle_max],
-    % to prevent hitting front panel of cartesian space
+    % figure out the front limit in workspace, when collecting joint #3
+    fprintf('setting Joint #3 params\n')
     if strcmp(ARM_NAME,'MTML')
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTML;
     else
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTMR;
     end
-    Joint_No = 2;
+    Moving_Joint_No = 2;
     param_name = 'theta_angle_max';
     default_value = config.data_collection.joint3.theta_angle_max;
     joint_init_pos(2) = default_value-5; %10 degree smaller for saftey reason
@@ -80,14 +104,14 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
         goal_msg,...
         couple_contraint);
 
-    % Identify the hard limit, [config.data_collection.joint3.couple_upper_limit],
-    % to prevent hitting upper panel of cartesian space
+    % figure out the upper limit in workspace, when collecting joint #3
     if strcmp(ARM_NAME,'MTML')
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTML;
     else
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTMR;
     end
-    Joint_No = 3;
+    Moving_Joint_No = 3;
+    fprintf('setting Joint #3 params\n')
     joint_init_pos(2) = config.data_collection.joint3.theta_angle_max;
     joint_init_pos(3) = config.data_collection.joint3.couple_upper_limit - 10 - joint_init_pos(2);
     param_name = 'couple_upper_limit';
@@ -95,59 +119,56 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     goal_msg = 'Moving MTM upward by increasing Joint#3, finish when distal links of MTM 10cm away from top panel of environment';
     config.data_collection.joint3.couple_upper_limit = wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
-        Joint_No,...
+        Moving_Joint_No,...
         param_name,...
         ARM_NAME,...
         default_value,...
         goal_msg,...
         true);
 
-    % Identify the hard limit, [config.data_collection.joint2.train_angle_max],
-    % to prevent hitting upper panel of cartesian space
-    Joint_No = 2;
+    % figure out the upper limit in workspace, when collecting joint #2
+    fprintf('setting Joint #2 params\n')
+    Moving_Joint_No = 2;
     joint_init_pos = config.data_collection.joint2.init_joint_range;
     param_name = 'train_angle_max';
     default_value = config.data_collection.joint2.train_angle_max;
-    joint_init_pos(Joint_No) = default_value-7;
+    joint_init_pos(Moving_Joint_No) = default_value-7;
     goal_msg = 'Moving MTM upward by increasing Joint#2, finish when distal links of MTM 10cm away from top panel of environment';
     config.data_collection.joint2.train_angle_max= wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
-        Joint_No,...
+        Moving_Joint_No,...
         param_name,...
         ARM_NAME,...
         default_value,...
         goal_msg);
 
-    % Identify the hard limit, [config.data_collection.joint1.train_angle_min.MTML],
-    % to prevent MTML hitting left panel of cartesian space
+   % figure out the left limit in workspace, when collecting joint #1
     if strcmp(ARM_NAME,'MTML')
+        fprintf('setting Joint #1 params\n')
         joint_init_pos = config.data_collection.joint1.init_joint_range;
-        Joint_No = 1;
+        Moving_Joint_No = 1;
         param_name = 'train_angle_min';
         default_value = config.data_collection.joint1.train_angle_min.MTML;
         goal_msg = 'Moving MTM left by decreasing Joint#1, finish when distal links of MTM 10cm away from left panel of environment';
         config.data_collection.joint1.train_angle_min.MTML = wizard_move_one_joint(mtm_arm,...
             joint_init_pos,...
-            Joint_No,...
+            Moving_Joint_No,...
             param_name,...
             ARM_NAME,...
             default_value,...
             goal_msg);
         mtm_arm.move_joint(deg2rad(joint_tele_pose));
-    end
-
-    % Identify the hard limit, [config.data_collection.joint1.train_angle_max.MTMR],
-    % to prevent MTMR hitting right panel of cartesian space
-    if strcmp(ARM_NAME,'MTMR')
+    else
+        fprintf('setting Joint #1 params\n')
         joint_init_pos = config.data_collection.joint1.init_joint_range;
 
-        Joint_No = 1;
+        Moving_Joint_No = 1;
         param_name = 'train_angle_max';
         default_value = config.data_collection.joint1.train_angle_max.MTMR;
         goal_msg = 'Moving MTM left by increasing Joint#1, finish when distal links of MTM 10cm away from right panel of environment';
         config.data_collection.joint1.train_angle_max.MTMR = wizard_move_one_joint(mtm_arm,...
             joint_init_pos,...
-            Joint_No,...
+            Moving_Joint_No,...
             param_name,...
             ARM_NAME,...
             default_value,...
@@ -155,37 +176,34 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
         mtm_arm.move_joint(deg2rad(joint_tele_pose));
     end
 
-    % Identify the hard limit, [config.data_collection.joint1.train_angle_max.MTML],
-    % to prevent MTML hitting right panel of cartesian space
+    % figure out the right limit in workspace, when collecting joint #1
     if strcmp(ARM_NAME,'MTML')
+        fprintf('setting Joint #1 params\n')
         joint_init_pos = config.data_collection.joint1.init_joint_range;
         joint_init_pos(1) = 30;
-        Joint_No = 1;
+        Moving_Joint_No = 1;
         param_name = 'train_angle_max';
         default_value = config.data_collection.joint1.train_angle_max.MTML;
         goal_msg = 'Moving MTM right by increasing Joint#1, finish when distal links of MTM 10cm away from right panel of environment/other MTM';
         config.data_collection.joint1.train_angle_max.MTML = wizard_move_one_joint(mtm_arm,...
             joint_init_pos,...
-            Joint_No,...
+            Moving_Joint_No,...
             param_name,...
             ARM_NAME,...
             default_value,...
             goal_msg);
         mtm_arm.move_joint(deg2rad(joint_tele_pose));
-    end
-
-    % Identify the hard limit, [config.data_collection.joint1.train_angle_min.MTMR],
-    % to prevent MTMR hitting right panel of cartesian space
-    if strcmp(ARM_NAME,'MTMR')
+   else
+        fprintf('setting Joint #1 params\n')
         joint_init_pos = config.data_collection.joint1.init_joint_range;
         joint_init_pos(1) = -30;
-        Joint_No = 1;
+        Moving_Joint_No = 1;
         param_name = 'train_angle_min';
         default_value = config.data_collection.joint1.train_angle_min.MTMR;
         goal_msg = 'Moving MTM left by decreasing Joint#1, finish when distal links of MTM 10cm away from left panel of environment/other MTM';
         config.data_collection.joint1.train_angle_min.MTMR = wizard_move_one_joint(mtm_arm,...
             joint_init_pos,...
-            Joint_No,...
+            Moving_Joint_No,...
             param_name,...
             ARM_NAME,...
             default_value,...
@@ -196,17 +214,17 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     % Final result output display
     close(gcf);
 
-    fprintf('Your customized parameters is:\n');
-    fprintf('joint3.theta_angle_max: %d\n', config.data_collection.joint3.theta_angle_max);
-    fprintf('joint3.couple_upper_limit: %d\n', config.data_collection.joint3.couple_upper_limit);
-    if strcmp(ARM_NAME,'MTML')
-        fprintf('Joint1.train_angle_min.MTML: %d\n', config.data_collection.joint1.train_angle_min.MTML);
-        fprintf('Joint1.train_angle_max.MTML: %d\n', config.data_collection.joint1.train_angle_max.MTML);
-    end
-    if strcmp(ARM_NAME,'MTMR')
-        fprintf('Joint1.train_angle_min.MTMR: %d\n', config.data_collection.joint1.train_angle_min.MTMR);
-        fprintf('Joint1.train_angle_max.MTMR: %d\n', config.data_collection.joint1.train_angle_max.MTMR);
-    end
+%     fprintf('Your customized parameters is:\n');
+%     fprintf('joint3.theta_angle_max: %d\n', config.data_collection.joint3.theta_angle_max);
+%     fprintf('joint3.couple_upper_limit: %d\n', config.data_collection.joint3.couple_upper_limit);
+%     if strcmp(ARM_NAME,'MTML')
+%         fprintf('Joint1.train_angle_min.MTML: %d\n', config.data_collection.joint1.train_angle_min.MTML);
+%         fprintf('Joint1.train_angle_max.MTML: %d\n', config.data_collection.joint1.train_angle_max.MTML);
+%     end
+%     if strcmp(ARM_NAME,'MTMR')
+%         fprintf('Joint1.train_angle_min.MTMR: %d\n', config.data_collection.joint1.train_angle_min.MTMR);
+%         fprintf('Joint1.train_angle_max.MTMR: %d\n', config.data_collection.joint1.train_angle_max.MTMR);
+%     end
 
 
     % Execute collision checking process
@@ -223,25 +241,25 @@ end
 
 function customized_value = wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
-        Joint_No,...
+        Moving_Joint_No,...
         param_name,...
         ARM_NAME,...
         default_value,...
         goal_msg,...
         is_couple_limit)
     input_str = '';
-    fprintf('Setting Hard limit for when collecting data of Joint#%d\n', Joint_No)
+    fprintf('Setting Hard limit for when collecting data of Joint#%d\n', Moving_Joint_No)
     fprintf('Moving to init pose\n');
     mtm_arm.move_joint(deg2rad(joint_init_pos));
     if(~exist('is_couple_limit', 'var'))
-        customized_value = joint_init_pos(Joint_No);
+        customized_value = joint_init_pos(Moving_Joint_No);
     else
-        customized_value = joint_init_pos(Joint_No) + joint_init_pos(Joint_No-1);
+        customized_value = joint_init_pos(Moving_Joint_No) + joint_init_pos(Moving_Joint_No-1);
     end
     joint_pos = joint_init_pos;
     fprintf('Instruction: %s\n', goal_msg);
     fprintf('Arm: %s\n', ARM_NAME);
-    fprintf('Joint_No: %d\n', Joint_No);
+    fprintf('Moving_Joint_No: %d\n', Moving_Joint_No);
     fprintf('Customized Param Name: %s\n', param_name);
     disp('[i] to increase, [d] to decrease, [r] for recommended, [f] when done');
     fprintf('Recommended value: [%s] = %d degree(s)\n', param_name, default_value);
@@ -266,9 +284,9 @@ function customized_value = wizard_move_one_joint(mtm_arm,...
             break
         end
         if(~exist('is_couple_limit', 'var'))
-            joint_pos(Joint_No) = customized_value;
+            joint_pos(Moving_Joint_No) = customized_value;
         else
-            joint_pos(Joint_No) = customized_value - joint_pos(Joint_No-1);
+            joint_pos(Moving_Joint_No) = customized_value - joint_pos(Moving_Joint_No-1);
         end
         mtm_arm.move_joint(deg2rad(joint_pos));
         input_str = '';
@@ -285,14 +303,14 @@ function customized_value = wizard_move_two_joint(mtm_arm,...
     % Hard Code
     Joint3_pos_min_limit = -35;
     input_str = '';
-    fprintf('Setting Hard limit for when collecting data of Joint#%d\n', 3);
+    %fprintf('Setting Hard limit for when collecting data of Joint#%d\n', 3);
     disp('Moving to init pose');
     mtm_arm.move_joint(deg2rad(joint_init_pos));
     customized_value = joint_init_pos(2);
     joint_pos = joint_init_pos;
     fprintf('Instruction: %s\n', goal_msg);
     fprintf('Arm: %s\n', ARM_NAME);
-    fprintf('Joint_No: %d\n', 2);
+    fprintf('Moving_Joint_No: %d\n', 2);
     fprintf('Customized Param Name: %s\n', param_name);
     disp('[i] to increase, [d] to decrease, [r] for recommended, [f] when done');
     fprintf('Recommended value: [%s] = %d degree(s)\n', param_name, default_value);

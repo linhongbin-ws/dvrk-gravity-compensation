@@ -50,7 +50,7 @@ function check_dataCollection_info_in_jointlimit(json_file, MTM_Name)
     if strcmp(MTM_Name, 'MTML')
         q_min(config.data_collection.joint4.Train_Joint_No) = config.data_collection.joint4.train_angle_min.MTML;
     else
-        q_min(config.data_collection.joint4.Theta_Joint_No) = config.data_collection.joint4.theta_angle_min.MTMR;
+        q_min(config.data_collection.joint4.Train_Joint_No) = config.data_collection.joint4.train_angle_min.MTMR;
     end
     if ~isWithinJointLimit(q_min, MTM_Name)
         fprintf('fail for q_min when collecting joint4\n')
@@ -61,7 +61,7 @@ function check_dataCollection_info_in_jointlimit(json_file, MTM_Name)
     if strcmp(MTM_Name, 'MTML')
         q_max(config.data_collection.joint4.Train_Joint_No) = config.data_collection.joint4.train_angle_max.MTML;
     else
-        q_max(config.data_collection.joint4.Theta_Joint_No) = config.data_collection.joint4.theta_angle_max.MTMR;
+        q_max(config.data_collection.joint4.Train_Joint_No) = config.data_collection.joint4.train_angle_max.MTMR;
     end
     if ~isWithinJointLimit(q_max, MTM_Name)
         fprintf('fail for q_max when collecting joint4\n')

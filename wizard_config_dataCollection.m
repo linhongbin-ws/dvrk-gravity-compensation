@@ -46,16 +46,32 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     mtm_arm.move_joint(deg2rad(joint_origin_pose));
 
     %%%%%%%%%%%%%%%%%%%%%%figure out suitable joint position params for specific system%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint6.init_joint_range(1) = 15;
+        config.data_collection.joint6.init_joint_range(4) = -110;
+    else
+        config.data_collection.joint6.init_joint_range(1) = -15;
+        config.data_collection.joint6.init_joint_range(4) = 110;
+    end
     
     % figure out the upper limit in workspace, when collecting joint #5
     fprintf('setting Joint #5 params\n')
     Moving_Joint_No = 3;
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint5.init_joint_range(1) = 15;
+        config.data_collection.joint5.init_joint_range(4) = -110;
+    else
+        config.data_collection.joint5.init_joint_range(1) = -15;
+        config.data_collection.joint5.init_joint_range(4) = 110;
+    end
     joint_init_pos = config.data_collection.joint5.init_joint_range;
     joint_init_pos(5) = 167 % a joint position that is most likely to hit upper workspace limit
     param_name = 'theta_angle_max';
     default_value = config.data_collection.joint5.theta_angle_max;
     joint_init_pos(3) = default_value-7; 
     goal_msg = 'Moving MTM upward by increasing Joint#3, finish when distal links of MTM 10cm away from top panel of environment';
+    
+
     config.data_collection.joint5.theta_angle_max = wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
         Moving_Joint_No,...
@@ -68,12 +84,20 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
     % figure out the upper limit in workspace, when collecting joint #4
     fprintf('setting Joint #4 params\n')
     Moving_Joint_No = 3; %
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint4.init_joint_range(1) = 15;
+        config.data_collection.joint4.init_joint_range(4) = 90;
+    else
+        config.data_collection.joint4.init_joint_range(1) = -15;
+        config.data_collection.joint4.init_joint_range(4) = -90;
+    end
     joint_init_pos = config.data_collection.joint4.init_joint_range;
-    joint_init_pos(4) = 90 % a joint position that is most likely to hit upper workspace limit for train joint
+%     joint_init_pos(4) = 90 % a joint position that is most likely to hit upper workspace limit for train joint
     param_name = 'theta_angle_max';
     default_value = config.data_collection.joint4.theta_angle_max;
     joint_init_pos(3) = default_value-7; %10 degree smaller for saftey reason
     goal_msg = 'Moving MTM upward by increasing Joint#3, finish when distal links of MTM 10cm away from top panel of environment';
+    
     config.data_collection.joint4.theta_angle_max = wizard_move_one_joint(mtm_arm,...
         joint_init_pos,...
         Moving_Joint_No,...
@@ -84,6 +108,13 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
 
     % figure out the front limit in workspace, when collecting joint #3
     fprintf('setting Joint #3 params\n')
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint3.init_joint_range.MTML(1) = 15;
+        config.data_collection.joint3.init_joint_range.MTML(4) = -110;
+    else
+        config.data_collection.joint3.init_joint_range.MTMR(1) = -15;
+        config.data_collection.joint3.init_joint_range.MTMR(4) = 110;
+    end
     if strcmp(ARM_NAME,'MTML')
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTML;
     else
@@ -105,6 +136,13 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
         couple_contraint);
 
     % figure out the upper limit in workspace, when collecting joint #3
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint3.init_joint_range.MTML(1) = 15;
+        config.data_collection.joint3.init_joint_range.MTML(4) = -110;
+    else
+        config.data_collection.joint3.init_joint_range.MTMR(1) = -15;
+        config.data_collection.joint3.init_joint_range.MTMR(4) = 110;
+    end
     if strcmp(ARM_NAME,'MTML')
         joint_init_pos = config.data_collection.joint3.init_joint_range.MTML;
     else
@@ -128,6 +166,13 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
 
     % figure out the upper limit in workspace, when collecting joint #2
     fprintf('setting Joint #2 params\n')
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint2.init_joint_range(1) = 15;
+        config.data_collection.joint2.init_joint_range(4) = -110;
+    else
+        config.data_collection.joint2.init_joint_range(1) = -15;
+        config.data_collection.joint2.init_joint_range(4) = 110;
+    end
     Moving_Joint_No = 2;
     joint_init_pos = config.data_collection.joint2.init_joint_range;
     param_name = 'train_angle_max';
@@ -142,6 +187,11 @@ function output_file_str = wizard_config_dataCollection(ARM_NAME,...
         default_value,...
         goal_msg);
 
+    if strcmp(ARM_NAME,'MTML')% cover default setting
+        config.data_collection.joint1.init_joint_range(4) = -110;
+    else
+        config.data_collection.joint1.init_joint_range(4) = 110;
+    end
    % figure out the left limit in workspace, when collecting joint #1
     if strcmp(ARM_NAME,'MTML')
         fprintf('setting Joint #1 params\n')

@@ -53,8 +53,7 @@ function output_file_str = dataCollection(dataCollection_config_str)
         total_data_sets = total_data_sets + config_joint_list{j}.data_size; 
     end
     one_data_progress_increment = 100 / total_data_sets;
-%     for i=1:size(config_joint_list,2)
-    for i=5
+    for i=1:size(config_joint_list,2)
             current_progress = collect_mtm_one_joint(config_joint_list{i},...
                                   mtm_arm,...
                                   is_collision_checking,...
